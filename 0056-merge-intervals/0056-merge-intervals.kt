@@ -2,36 +2,23 @@ class Solution {
     fun merge(intervals: Array<IntArray>): Array<IntArray> {
         val intervalList = intervals.map { Interval(it) }.sortedBy { it.start }
 
-        val mergedIntervalList = mutableListOf<Interval>()
+        var pivotInterval = intervalList.first()
+
+        val result = mutableListOf(pivotInterval)
 
         for (interval in intervalList) {
-            var pivotInterval = interval
-            for (nextInterval in intervalList) {
-                if (nextInterval == interval || nextInterval.isMerged) {
-                    continue
-                }
-
-                if (pivotInterval.isOverlapping(nextInterval)) {
-                    pivotInterval = pivotInterval.merge(nextInterval)
-                    nextInterval.isMerged = true
-                }
-            }
-
-            if (pivotInterval != interval) {
-                mergedIntervalList.add(pivotInterval)
-                interval.isMerged = true
+            if (pivotInterval.isOverlapping(interval)) {
+                pivotInterval.merge(interval)
+            } else {
+                pivotInterval = interval
+                result.add(pivotInterval)
             }
         }
 
-        return intervalList
-            .filter { it.isMerged.not() }
-            .plus(mergedIntervalList)
-            .sortedBy { it.start }
-            .map { intArrayOf(it.start, it.end) }
-            .toTypedArray()
+        return result.map { intArrayOf(it.start, it.end) }.toTypedArray();
     }
 
-    class Interval(val start: Int, val end: Int, var isMerged: Boolean = false) {
+    class Interval(var start: Int, var end: Int, var isMerged: Boolean = false) {
         constructor(intArray: IntArray): this(intArray[0], intArray[1])
 
         fun isIn(point: Int): Boolean {
@@ -51,11 +38,11 @@ class Solution {
         }
     }
 
-    private fun Interval.merge(interval: Interval): Interval {
-        check(isOverlapping(interval))
+    private fun Interval.merge(interval: Interval) {
         val mergedStart = listOf(start, end, interval.start, interval.end).minOf { it }
         val mergedEnd = listOf(start, end, interval.start, interval.end).maxOf { it }
 
-        return Interval(mergedStart, mergedEnd)
+        start = mergedStart
+        end = mergedEnd
     }
 }
