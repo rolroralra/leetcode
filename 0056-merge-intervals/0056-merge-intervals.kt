@@ -21,28 +21,33 @@ class Solution {
     class Interval(var start: Int, var end: Int, var isMerged: Boolean = false) {
         constructor(intArray: IntArray): this(intArray[0], intArray[1])
 
-        fun isIn(point: Int): Boolean {
+        fun merge(interval: Interval) {
+            val mergedStart = listOf(start, end, interval.start, interval.end).minOf { it }
+            val mergedEnd = listOf(start, end, interval.start, interval.end).maxOf { it }
+
+            start = mergedStart
+            end = mergedEnd
+        }
+
+        fun isOverlapping(interval: Interval): Boolean {
+            return contains(interval)
+                .or(isIn(interval))
+                .or(contains(interval.start))
+                .or(contains(interval.end))
+        }
+
+        private fun contains(point: Int): Boolean {
             return point in range()
         }
 
-        private fun range(): IntRange = (start..end)
-    }
-
-
-    private fun Interval.isOverlapping(interval: Interval): Boolean {
-        return when {
-            start <= interval.start && interval.end <= end -> true
-            interval.start <= start && end <= interval.end -> true
-            isIn(interval.start) || isIn(interval.end) -> true
-            else -> false
+        private fun contains(interval: Interval): Boolean {
+            return start <= interval.start && interval.end <= end
         }
-    }
 
-    private fun Interval.merge(interval: Interval) {
-        val mergedStart = listOf(start, end, interval.start, interval.end).minOf { it }
-        val mergedEnd = listOf(start, end, interval.start, interval.end).maxOf { it }
+        private fun isIn(interval: Interval): Boolean {
+            return interval.start <= start && end <= interval.end
+        }
 
-        start = mergedStart
-        end = mergedEnd
+        private fun range(): IntRange = (start..end)
     }
 }
