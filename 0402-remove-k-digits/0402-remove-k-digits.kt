@@ -16,6 +16,12 @@ class Solution {
             removedCount++
         }
 
-        return stack.joinToString("").trimStart('0').ifBlank { "0" }
+        val result = StringBuilder()
+
+        while (stack.isNotEmpty()) {
+            result.insert(0, stack.pop())
+        }
+        
+        return result.toString().trimStart('0').ifBlank { "0" }
     }
 }
