@@ -9,7 +9,7 @@ class Solution {
             val remain = (remainNumber - 1) % DIGIT
             val quotient = (remainNumber - 1) / DIGIT
 
-            list.add(remain + 1)
+            list.add(remain)
 
             remainNumber = quotient
         }
@@ -18,6 +18,6 @@ class Solution {
     }
 
     fun Int.toExcelChar(): Char {
-        return ('A'.code + this - 1).toChar()
+        return ('A'.code + this).toChar()
     }
 }
